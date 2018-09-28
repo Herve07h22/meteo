@@ -104,10 +104,10 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     var card = app.visibleCards[data.key];
     if (!card) {
       if (app.selectedCities && app.selectedCities.filter( (c) => (c.key === data.key) ).length ) {
-        console.log("Creating card " + app.selectedCities.filter( (c) => (c.key === data.key) ).label);
+        console.log("Creating card " + app.selectedCities.filter( (c) => (c.key === data.key) )[0].label);
         card = app.cardTemplate.cloneNode(true);
         card.classList.remove('cardTemplate');
-        card.querySelector('.location').textContent = app.selectedCities.filter( (c) => (c.key === data.key) ).label;
+        card.querySelector('.location').textContent = app.selectedCities.filter( (c) => (c.key === data.key) )[0].label;
         card.removeAttribute('hidden');
         app.container.appendChild(card);
         app.visibleCards[data.key] = card;  
