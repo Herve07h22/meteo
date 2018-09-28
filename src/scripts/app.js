@@ -43,8 +43,6 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
   window.addEventListener('online', () => app.reconnectApp() );
 
-  window.addEventListener('load', () => app.loadApp() );
-
   document.getElementById('butAdd').addEventListener('click', function() {
     // Open/show the add new city dialog
     app.toggleAddDialog(true);
@@ -225,6 +223,7 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
       } else {
         // Return the initial weather forecast since no data is available.
         // app.updateForecastCard(initialWeatherForecast);
+        // console.log("No data available !");
       }
     };
     request.open('GET', url);
@@ -385,56 +384,47 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
   };
 
   app.loadApp = function() {
-    // App has just been load
+ 
     // Let's update all the data !
     console.log("Init all the available forecast data !");
-    var listOfCities = Array.from(document.getElementById('selectCityToAdd'));
-    listOfCities.forEach(function(city) {   
+    // Impossible de récupérer la liste des ville par le DOM, car il n'est pas encore chargé
+    var listOfCities =  [
+      {value:"585596", textContent:"Cherbourg"},
+      {value:"613858", textContent:"Nantes"},
+      {value:"615702", textContent:"Paris"},
+      {value:"580778", textContent:"Bordeaux"},
+      {value:"609125", textContent:"Lyon"},
+      {value:"2487956", textContent:"San Francisco"},
+      {value:"610264", textContent:"Marseille"}
+    ];
+    listOfCities.forEach(function(city) {
+      // console.log("-- initialize data for", city.textContent);   
       app.getForecast(city.value, city.textContent); 
     });
-    // S'il existe des villes mémorisées, on cache la fenêtre de dialogue
-
+    
+    // S'il existe des villes mémorisées, on les charge
+    app.selectedCities = localStorage.selectedCities;
+    if (app.selectedCities) {
+      app.selectedCities = JSON.parse(app.selectedCities);
+      app.selectedCities.forEach(function(city) {
+        app.getForecast(city.key, city.label);
+      });
+    };
   };
 
   app.reconnectApp = function() {
     // App has been reconnect to the network
+    // Check if forecast cache is full
+    app.loadApp();
     // Lets's upadate listOfCities
     app.updateForecasts();
   };
 
-
-  /************************************************************************
-   *
-   * Code required to start the app
-   *
-   * NOTE: To simplify this codelab, we've used localStorage.
-   *   localStorage is a synchronous API and has serious performance
-   *   implications. It should not be used in production applications!
-   *   Instead, check out IDB (https://www.npmjs.com/package/idb) or
-   *   SimpleDB (https://gist.github.com/inexorabletash/c8069c042b734519680c)
-   ************************************************************************/
-
-  // TODO add startup code here
-  app.selectedCities = localStorage.selectedCities;
-  if (app.selectedCities) {
-    app.selectedCities = JSON.parse(app.selectedCities);
-    app.selectedCities.forEach(function(city) {
-      app.getForecast(city.key, city.label);
-    });
-  } else {
-    // initialiser les prévisions de toutes les villes
-    
-
-  }
-
-  // TODO add service worker code here
   if ('serviceWorker' in navigator) {
     const registration = runtime.register();
+    console.log("-- après registration");
+    navigator.serviceWorker.oncontrollerchange = (controllerchangeevent) => app.loadApp() ;
+
   }
 
-  //if ('serviceWorker' in navigator) {
-  //  navigator.serviceWorker
-  //           .register(url('service-worker.js'))
-  //           .then(function() { console.log('Service Worker Registered'); });
-  //}
 })();

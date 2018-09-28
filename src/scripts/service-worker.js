@@ -29,8 +29,10 @@ self.addEventListener('install', function(e) {
 
 self.addEventListener('activate', function(e) {
   console.log('[ServiceWorker] Activate');
+  
   e.waitUntil(
     caches.keys().then(function(keyList) {
+      console.log("After activation");
       return Promise.all(keyList.map(function(key) {
         if (key !== cacheName && key !== dataCacheName) {
           console.log('[ServiceWorker] Removing old cache', key);
@@ -39,6 +41,10 @@ self.addEventListener('activate', function(e) {
       }));
     })
   );
+
+  console.log("After activation 2");
+
+
   /*
    * Fixes a corner case in which the app wasn't returning the latest data.
    * You can reproduce the corner case by commenting out the line below and
@@ -49,6 +55,7 @@ self.addEventListener('activate', function(e) {
    * service worker is not yet activated. The code below essentially lets
    * you activate the service worker faster.
    */
+  
   return self.clients.claim();
 });
 
@@ -63,7 +70,7 @@ self.addEventListener('fetch', function(e) {
      * network" strategy:
      * https://jakearchibald.com/2014/offline-cookbook/#cache-then-network
      */
-    console.log('[Service Worker] query yahoo api');
+    // console.log('[Service Worker] query yahoo api');
     e.respondWith(
       caches.open(dataCacheName).then(function(cache) {
         return fetch(e.request).then(function(response){
@@ -78,7 +85,7 @@ self.addEventListener('fetch', function(e) {
      * "Cache, falling back to the network" offline strategy:
      * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
      */
-    console.log('[Service Worker] query pwa files');
+    // console.log('[Service Worker] query pwa files');
     if (e.request.cache === 'only-if-cached' && e.request.mode !== 'same-origin' && e.request.url.indexOf("sockjs-node")) {
       console.log('[Service Worker] Invalid request mode');
       return;
