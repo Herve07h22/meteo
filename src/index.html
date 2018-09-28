@@ -29,7 +29,7 @@
   <!-- Add to home screen for Safari on iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Meteo PWA">
+  <meta name="apple-mobile-web-app-title" content="Météo PWA">
   <link rel="apple-touch-icon" href=url("../images/icons/icon-152x152.png")>
   <meta name="msapplication-TileImage" content=url("./images/icons/icon-144x144.png")>
   <meta name="msapplication-TileColor" content="#2F3BA2">
@@ -37,7 +37,7 @@
 <body>
 
   <header class="header">
-    <h1 class="header__title">Meteo PWA</h1>
+    <h1 class="header__title">Météo PWA</h1>
     <button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
     <button id="butAdd" class="headerButton" aria-label="Add"></button>
   </header>
@@ -45,7 +45,7 @@
   <main class="main">
     <div class="card cardTemplate weather-forecast" hidden>
       <div class="city-key" hidden></div>
-      <div class="card-last-updated" hidden></div>
+      <div><span class="card-last-updated-text"> Mise à jour : </span><span class="card-last-updated"></span></div>
       <div class="location"></div>
       <div class="date"></div>
       <div class="description"></div>
@@ -142,13 +142,32 @@
     </div>
   </main>
 
+  <div class="loader">
+      <p>Une application PWA offre plusieurs avantages, car elle est :
+        <ul>
+        <li><b>Progressive</b> - Elle fonctionne pour tous les systèmes (Android, iPhone).</li>
+        <li><b>Responsive</b> - On peut l'utiliser sur PC, tablette, ou sur mobile .</li>
+        <li><b>disponible En et Hors ligne</b> - Elle stockes les données localement, et se synchronise quand elle peut.</li>
+        <li><b>Simple à installer</b> - Pas besoin de store Google Play ou Apple store, un lien suffit pour l'installer</li>
+        <li><b>Sûre</b> - Elle utilise le protocole sécurisé https pour communiquer avec le serveur.</li>
+        </ul>
+      </p>
+      <p>
+        Cette application récupère les données météo de quelques villes.
+        Commencer à l'utiliser en ligne, plus passer votre mobile en mode "avion" pour la déconnecter du réseau.
+        Vous pourrez alors continuer à utiliser l'application, mais les données météo ne seront pas rafraichies.
+        Soyez attentif à la mention "Mise à jour" en haut de chaque ville. En supprimant le mode "avion", constatez la synchronisation automatique des données !
+      </p>
+      <p><a href="https://camilab.co">Camilab.co</a> @ 2018</p>
+</div>
+
   <div class="dialog-container">
     <div class="dialog">
       <div class="dialog-title">Ajouter une ville</div>
       <div class="dialog-body">
-        <select id="selectCityToAdd">
-          <!-- Values map to Yahoo Weather API Where On Earth Identifiers (WOEIDs).
+        <!-- Values map to Yahoo Weather API Where On Earth Identifiers (WOEIDs).
                https://developer.yahoo.com/weather/documentation.html#req -->
+        <select id="selectCityToAdd">
           <option value="585596">Cherbourg</option>
           <option value="613858">Nantes</option>
           <option value="615702">Paris</option>
@@ -165,11 +184,7 @@
     </div>
   </div>
 
-  <div class="loader">
-    <svg viewBox="0 0 32 32" width="32" height="32">
-      <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
-    </svg>
-  </div>
+
 
   <!-- Uncomment the line below when ready to test with fake data -->
   <!-- script src="scripts/app.js" async></script -->

@@ -16,27 +16,6 @@ var dataCacheName = 'weatherData-v1';
 var cacheName = 'weatherPWA-final-1';
 
 var filesToCache = serviceWorkerOption.assets;
-/*
-[
-  url('/'),
-  url('../index.html'),
-  url('app.js'),
-  url('../styles/inline.css'),
-  url('../images/clear.png'),
-  url('../images/cloudy-scattered-showers.png'),
-  url('../images/cloudy.png'),
-  url('../images/fog.png'),
-  url('../images/ic_add_white_24px.svg'),
-  url('../images/ic_refresh_white_24px.svg'),
-  url('../images/partly-cloudy.png'),
-  url('../images/rain.png'),
-  url('../images/scattered-showers.png'),
-  url('../images/sleet.png'),
-  url('../images/snow.png'),
-  url('../images/thunderstorm.png'),
-  url('../images/wind.png')
-];
-*/
 
 self.addEventListener('install', function(e) {
   console.log('[ServiceWorker] Install');

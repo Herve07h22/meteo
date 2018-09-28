@@ -122,21 +122,6 @@ body {
       -ms-flex: 1;
           flex: 1; }
 
-.loader {
-  left: 50%;
-  top: 50%;
-  position: fixed;
-  -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%); }
-  .loader #spinner {
-    box-sizing: border-box;
-    stroke: #673AB7;
-    stroke-width: 3px;
-    -webkit-transform-origin: 50%;
-            transform-origin: 50%;
-    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
-            animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
-
 @-webkit-keyframes rotate {
   from {
     -webkit-transform: rotate(0);
@@ -204,7 +189,7 @@ body {
   -webkit-transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1);
   transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1); }
 
-.dialog-container--visible {
+.dialog-container--visible, .loader {
   opacity: 1;
   pointer-events: auto; }
 
@@ -257,6 +242,9 @@ body {
 .weather-forecast .date, .weather-forecast .description {
   font-size: 1.25em; }
 
+.weather-forecast .card-last-updated, .weather-forecast .card-last-updated-text {
+  font-size: 0.5em; }
+  
 .weather-forecast .current {
   display: -webkit-box;
   display: -webkit-flex;
@@ -348,6 +336,8 @@ body {
 @media (max-width: 450px) {
   .weather-forecast .date, .weather-forecast .description {
     font-size: 0.9em; }
+  .weather-forecast .card-last-updated, .weather-forecast .card-last-updated-text {
+      font-size: 0.6em; }
   .weather-forecast .current .icon {
     width: 96px;
     height: 96px; }

@@ -41,6 +41,10 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     app.updateForecasts();
   });
 
+  window.addEventListener('online', () => app.updateForecasts() );
+
+  window.addEventListener('load', () => app.updateForecasts() );
+
   document.getElementById('butAdd').addEventListener('click', function() {
     // Open/show the add new city dialog
     app.toggleAddDialog(true);
@@ -76,6 +80,11 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
   // Toggles the visibility of the add new city dialog.
   app.toggleAddDialog = function(visible) {
     if (visible) {
+      if (app.isLoading) {
+        app.spinner.setAttribute('hidden', true);
+        app.container.removeAttribute('hidden');
+        app.isLoading = false;
+      }
       app.addDialog.classList.add('dialog-container--visible');
     } else {
       app.addDialog.classList.remove('dialog-container--visible');
@@ -94,12 +103,8 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
     var card = app.visibleCards[data.key];
     if (!card) {
-      card = app.cardTemplate.cloneNode(true);
-      card.classList.remove('cardTemplate');
-      card.querySelector('.location').textContent = data.label;
-      card.removeAttribute('hidden');
-      app.container.appendChild(card);
-      app.visibleCards[data.key] = card;
+      // Si cette ville n'est pas dans la liste, on ne met rien à jour
+      return;
     }
 
     // Verifies the data provide is newer than what's already visible
@@ -117,7 +122,7 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     cardLastUpdatedElem.textContent = data.created;
 
     card.querySelector('.description').textContent = app.getFrenchText(current.code);
-    card.querySelector('.date').textContent = current.date;
+    card.querySelector('.date').textContent = app.getFrenchDate(current.date);
     card.querySelector('.current .icon').classList.add(app.getIconClass(current.code));
     card.querySelector('.current .temperature .value').textContent =
       Math.round((current.temp - 32)/1.8);
@@ -151,6 +156,11 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     }
   };
 
+  app.getFrenchDate = function (textDate) {
+    var laDate = new Date(textDate.replace('CEST', ''));
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return laDate.toLocaleDateString('fr-FR', options);
+  };
 
   /*****************************************************************************
    *
@@ -203,7 +213,7 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
         }
       } else {
         // Return the initial weather forecast since no data is available.
-        app.updateForecastCard(initialWeatherForecast);
+        // app.updateForecastCard(initialWeatherForecast);
       }
     };
     request.open('GET', url);
@@ -212,7 +222,12 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
   // Iterate all of the cards and attempt to get the latest forecast data
   app.updateForecasts = function() {
+    
+    // Chargement pour les carte visibles seulement
     var keys = Object.keys(app.visibleCards);
+
+    //  Chargement de toutes les prévisions
+
     keys.forEach(function(key) {
       app.getForecast(key);
     });
@@ -223,6 +238,17 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
   app.saveSelectedCities = function() {
     var selectedCities = JSON.stringify(app.selectedCities);
     localStorage.selectedCities = selectedCities;
+    app.selectedCities.forEach( (city) => {
+      var card = app.visibleCards[city.key];
+      if (!card) {
+        card = app.cardTemplate.cloneNode(true);
+        card.classList.remove('cardTemplate');
+        card.querySelector('.location').textContent = city.label;
+        card.removeAttribute('hidden');
+        app.container.appendChild(card);
+        app.visibleCards[city.key] = card;
+      }
+    });
   };
 
   app.getIconClass = function(weatherCode) {
@@ -353,48 +379,6 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     }
   };
 
-  /*
-   * Fake weather data that is presented when the user first uses the app,
-   * or when the user has not saved any cities. See startup code for more
-   * discussion.
-   */
-  var initialWeatherForecast = {
-    key: '2459115',
-    label: 'New York, NY',
-    created: '2016-07-22T01:00:00Z',
-    channel: {
-      astronomy: {
-        sunrise: "5:43 am",
-        sunset: "8:21 pm"
-      },
-      item: {
-        condition: {
-          text: "Windy",
-          date: "Thu, 21 Jul 2016 09:00 PM EDT",
-          temp: 56,
-          code: 24
-        },
-        forecast: [
-          {code: 44, high: 86, low: 70},
-          {code: 44, high: 94, low: 73},
-          {code: 4, high: 95, low: 78},
-          {code: 24, high: 75, low: 89},
-          {code: 24, high: 89, low: 77},
-          {code: 44, high: 92, low: 79},
-          {code: 44, high: 89, low: 77}
-        ]
-      },
-      atmosphere: {
-        humidity: 56
-      },
-      wind: {
-        speed: 25,
-        direction: 195
-      }
-    }
-  };
-  // TODO uncomment line below to test app with fake data
-  // app.updateForecastCard(initialWeatherForecast);
 
   /************************************************************************
    *
@@ -415,16 +399,18 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
       app.getForecast(city.key, city.label);
     });
   } else {
-    /* The user is using the app for the first time, or the user has not
-     * saved any cities, so show the user some fake data. A real app in this
-     * scenario could guess the user's location via IP lookup and then inject
-     * that data into the page.
-     */
-    app.updateForecastCard(initialWeatherForecast);
-    app.selectedCities = [
-      {key: initialWeatherForecast.key, label: initialWeatherForecast.label}
-    ];
-    app.saveSelectedCities();
+    // initialiser les prévisions de toutes les villes
+    var listOfCities = Array.from(document.getElementById('selectCityToAdd'));
+    listOfCities.forEach(function(city) {   
+      app.getForecast(city.value, city.textContent); 
+    }) ;
+
+    //var selected = select.options[select.selectedIndex];
+    //var key = selected.value;
+    //var label = selected.textContent;
+    
+    // Show welcome box
+
   }
 
   // TODO add service worker code here
