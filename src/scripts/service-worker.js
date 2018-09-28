@@ -14,7 +14,10 @@
 
 var dataCacheName = 'weatherData-v1';
 var cacheName = 'weatherPWA-final-1';
-var filesToCache = [
+
+var filesToCache = serviceWorkerOption.assets;
+/*
+[
   url('/'),
   url('../index.html'),
   url('app.js'),
@@ -33,6 +36,7 @@ var filesToCache = [
   url('../images/thunderstorm.png'),
   url('../images/wind.png')
 ];
+*/
 
 self.addEventListener('install', function(e) {
   console.log('[ServiceWorker] Install');
@@ -80,6 +84,7 @@ self.addEventListener('fetch', function(e) {
      * network" strategy:
      * https://jakearchibald.com/2014/offline-cookbook/#cache-then-network
      */
+    console.log('[Service Worker] query yahoo api');
     e.respondWith(
       caches.open(dataCacheName).then(function(cache) {
         return fetch(e.request).then(function(response){
@@ -94,9 +99,17 @@ self.addEventListener('fetch', function(e) {
      * "Cache, falling back to the network" offline strategy:
      * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
      */
+    console.log('[Service Worker] query pwa files');
+    if (e.request.cache === 'only-if-cached' && e.request.mode !== 'same-origin' && e.request.url.indexOf("sockjs-node")) {
+      console.log('[Service Worker] Invalid request mode');
+      return;
+    }
     e.respondWith(
       caches.match(e.request).then(function(response) {
         return response || fetch(e.request);
+      }).catch(function(e) {
+        console.log('[Service Worker] Erreur dans le fetch');
+        console.log(e);
       })
     );
   }

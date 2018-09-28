@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import "../styles/inline.css";
+import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 (function() {
   'use strict';
@@ -428,8 +429,12 @@ import "../styles/inline.css";
 
   // TODO add service worker code here
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-             .register('./service-worker.js')
-             .then(function() { console.log('Service Worker Registered'); });
+    const registration = runtime.register();
   }
+
+  //if ('serviceWorker' in navigator) {
+  //  navigator.serviceWorker
+  //           .register(url('service-worker.js'))
+  //           .then(function() { console.log('Service Worker Registered'); });
+  //}
 })();
