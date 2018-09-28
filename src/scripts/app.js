@@ -41,9 +41,9 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     app.updateForecasts();
   });
 
-  window.addEventListener('online', () => app.updateForecasts() );
+  window.addEventListener('online', () => app.reconnectApp() );
 
-  window.addEventListener('load', () => app.updateForecasts() );
+  window.addEventListener('load', () => app.loadApp() );
 
   document.getElementById('butAdd').addEventListener('click', function() {
     // Open/show the add new city dialog
@@ -103,8 +103,19 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
     var card = app.visibleCards[data.key];
     if (!card) {
-      // Si cette ville n'est pas dans la liste, on ne met rien à jour
-      return;
+      if (app.selectedCities && app.selectedCities.filter( (c) => (c.key === data.key) ).length ) {
+        console.log("Creating card " + app.selectedCities.filter( (c) => (c.key === data.key) ).label);
+        card = app.cardTemplate.cloneNode(true);
+        card.classList.remove('cardTemplate');
+        card.querySelector('.location').textContent = app.selectedCities.filter( (c) => (c.key === data.key) ).label;
+        card.removeAttribute('hidden');
+        app.container.appendChild(card);
+        app.visibleCards[data.key] = card;  
+      }
+      else {
+        // Si cette ville n'est pas dans la liste, on ne met rien à jour
+        return ;
+      };
     }
 
     // Verifies the data provide is newer than what's already visible
@@ -221,15 +232,9 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
   };
 
   // Iterate all of the cards and attempt to get the latest forecast data
-  app.updateForecasts = function() {
-    
-    // Chargement pour les carte visibles seulement
-    var keys = Object.keys(app.visibleCards);
-
-    //  Chargement de toutes les prévisions
-
-    keys.forEach(function(key) {
-      app.getForecast(key);
+  app.updateForecasts = function() {    
+    app.selectedCities.forEach(function(city) {
+      app.getForecast(city.key, city.label);
     });
   };
 
@@ -379,6 +384,24 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     }
   };
 
+  app.loadApp = function() {
+    // App has just been load
+    // Let's update all the data !
+    console.log("Init all the available forecast data !");
+    var listOfCities = Array.from(document.getElementById('selectCityToAdd'));
+    listOfCities.forEach(function(city) {   
+      app.getForecast(city.value, city.textContent); 
+    });
+    // S'il existe des villes mémorisées, on cache la fenêtre de dialogue
+
+  };
+
+  app.reconnectApp = function() {
+    // App has been reconnect to the network
+    // Lets's upadate listOfCities
+    app.updateForecasts();
+  };
+
 
   /************************************************************************
    *
@@ -400,16 +423,7 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
     });
   } else {
     // initialiser les prévisions de toutes les villes
-    var listOfCities = Array.from(document.getElementById('selectCityToAdd'));
-    listOfCities.forEach(function(city) {   
-      app.getForecast(city.value, city.textContent); 
-    }) ;
-
-    //var selected = select.options[select.selectedIndex];
-    //var key = selected.value;
-    //var label = selected.textContent;
     
-    // Show welcome box
 
   }
 
