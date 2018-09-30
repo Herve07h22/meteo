@@ -35,6 +35,28 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
    * Event listeners for UI elements
    *
    ****************************************************************************/
+  window.addEventListener('beforeinstallprompt', (e) => {
+    
+    console.log("--event beforeinstallprompt ");
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI notify the user they can add to home screen
+    // btnAdd.style.display = 'block';
+    
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice
+      .then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        deferredPrompt = null;
+      });
+  });
 
   document.getElementById('butRefresh').addEventListener('click', function() {
     // Refresh all of the forecasts
