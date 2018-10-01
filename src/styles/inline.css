@@ -194,7 +194,9 @@ body {
   pointer-events: auto; }
 
 .loader {
-  margin: 10px; }
+  margin: 10px;
+  padding-top: 60px; 
+}
 
 .loader > p {
     padding: 5px;

@@ -43,6 +43,20 @@
     <button id="butAdd" class="headerButton" aria-label="Add"></button>
   </header>
 
+  <div class="loader">
+    <p>
+      Cette application récupère les données météo de quelques villes. 
+      Elle s'utilise sur un mobile avec le navigateur Chrome (Android) ou Safari (Apple).
+      Pour les navigateurs récents, une fenêtre apparaît en bas de l'écran, pour vous proposer de l'ajouter à votre écran d'accueil.
+    </p>
+    <p>
+      Commencez à l'utiliser en ligne en ajoutant une ville, puis passez votre mobile en mode "avion" pour la déconnecter du réseau.
+      Vous pourrez alors continuer à utiliser l'application, mais les prévisions météo ne seront pas rafraichies.
+      Soyez attentif à la mention "Mise à jour" en haut de chaque ville. En sortant du mode "avion", constatez la synchronisation automatique des données !
+    </p>
+      <p><a href="https://camilab.co">Camilab.co</a> @ 2018</p>
+</div>
+
   <main class="main">
     <div class="card cardTemplate weather-forecast" hidden>
       <div class="city-key" hidden></div>
@@ -143,30 +157,7 @@
     </div>
   </main>
 
-  <div class="loader">
-    <p>
-      Cette application récupère les données météo de quelques villes. 
-      Elle s'utilise sur un mobile avec le navigateur Chrome (Android) ou Safari (Apple).
-      Pour les navigateurs récents, une fenêtre apparaît en bas de l'écran, pour vous proposer de l'ajouter à votre écran d'accueil.
-    </p>
-    <p>
-      Commencez à l'utiliser en ligne en ajoutant une ville, puis passez votre mobile en mode "avion" pour la déconnecter du réseau.
-      Vous pourrez alors continuer à utiliser l'application, mais les prévisions météo ne seront pas rafraichies.
-      Soyez attentif à la mention "Mise à jour" en haut de chaque ville. En sortant du mode "avion", constatez la synchronisation automatique des données !
-    </p>
-    <p>Cette application mobile est une PWA ("Progressive Web App").
-      Une application PWA offre plusieurs avantages :
-        <ul>
-        <li>Elle fonctionne pour tous les systèmes (Android, iPhone).</li>
-        <li>On peut l'utiliser sur PC, tablette, ou sur mobile .</li>
-        <li>Elle reste disponible hors ligne, car elle stocke les données localement et se synchronise quand elle peut.</li>
-        <li>Pas besoin de store Google Play ou Apple store, un lien suffit pour l'installer.</li>
-        <li>Elle utilise le protocole sécurisé https pour communiquer avec le serveur.</li>
-        </ul>
-      </p>
-      
-      <p><a href="https://camilab.co">Camilab.co</a> @ 2018</p>
-</div>
+ 
 
   <div class="dialog-container">
     <div class="dialog">
