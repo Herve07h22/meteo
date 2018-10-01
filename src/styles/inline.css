@@ -189,9 +189,16 @@ body {
   -webkit-transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1);
   transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1); }
 
-.dialog-container--visible, .loader {
+.dialog-container--visible {
   opacity: 1;
   pointer-events: auto; }
+
+.loader {
+  margin: 10px; }
+
+.loader > p {
+    padding: 5px;
+}; 
 
 .dialog {
   background: #FFF;
